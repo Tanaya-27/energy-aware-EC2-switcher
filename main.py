@@ -4,7 +4,7 @@ import boto3
 import time
 
 # Ordered list of instance sizes (can expand this as needed)
-INSTANCE_ORDER = ['t3.micro', 't3.small', 't3.medium', 't3.large']
+INSTANCE_ORDER = ['t2.micro', 't2.small', 't2.medium', 't2.large']
 
 def get_all_instances(region_name='us-east-1'):
     ec2 = boto3.client('ec2', region_name=region_name)
