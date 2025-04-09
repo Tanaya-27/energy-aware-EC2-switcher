@@ -1,5 +1,7 @@
 import random
 import numpy as np
+import gym
+from gym import spaces
 
 class EC2Environment:
     def __init__(self, instance_list, power_data, price_data, workload_profile=None):
@@ -11,6 +13,14 @@ class EC2Environment:
         self.current_step = 0
         self.current_instance = None
         self.region = 'us-east-1'  # default region
+
+        # Define action and observation spaces
+        self.action_space = spaces.Discrete(len(self.instance_list))  # One action per instance type
+        self.observation_space = spaces.Box(
+            low=np.array([0.0, 0.0, 0.0, 0.0]),  # Min values for [cpu, net, power, price]
+            high=np.array([100.0, 1e7, max(self.power_data.values()), max(self.price_data.values())]),
+            dtype=np.float32
+        )
 
     def reset(self):
         self.current_step = 0
