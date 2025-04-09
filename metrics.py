@@ -50,10 +50,36 @@ class MetricCollector:
 
 # testing metrics by printing them out
 def get_instance_metadata():
-    return requests.get("http://169.254.169.254/latest/meta-data/instance-id").text
+    try:
+        # Step 1: Request a token for IMDSv2
+        token_response = requests.put(
+            "http://169.254.169.254/latest/api/token",
+            headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"},
+            timeout=2
+        )
+        token_response.raise_for_status()
+        token = token_response.text
+
+        # Step 2: Use the token to fetch the instance ID
+        metadata_response = requests.get(
+            "http://169.254.169.254/latest/meta-data/instance-id",
+            headers={"X-aws-ec2-metadata-token": token},
+            timeout=2
+        )
+        metadata_response.raise_for_status()
+        return metadata_response.text
+    except requests.RequestException as e:
+        print(f"Error fetching instance metadata: {e}")
+        return None
+
 
 if __name__ == "__main__":
     instance_id = get_instance_metadata()
+    if not instance_id:
+        print("Failed to retrieve instance ID. Exiting.")
+    else:
+        collector = MetricCollector(instance_id)
+
     collector = MetricCollector(instance_id)
 
     metrics = collector.get_all_metrics()
