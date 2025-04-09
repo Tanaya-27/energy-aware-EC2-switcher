@@ -42,14 +42,18 @@ class EC2Environment(gym.Env):
         """
         prev_instance = self.current_instance
         self.current_instance = self.instance_list[action]
-        self.current_step += 1
-
-        next_state = self._get_state()
-        reward = self._calculate_reward(prev_instance, self.current_instance)
 
         # Determine if the episode is terminated or truncated
-        terminated = self.current_step >= len(self.workload_profile)  # Task is complete
+        terminated = self.current_step >= len(self.workload_profile) - 1  # Task is complete
         truncated = False  # No explicit truncation logic in this environment
+
+        if not terminated:
+            self.current_step += 1
+            next_state = self._get_state()
+        else:
+            next_state = np.zeros_like(self.observation_space.low)  # Return a dummy state when terminated
+
+        reward = self._calculate_reward(prev_instance, self.current_instance)
 
         # Optional info dictionary (can be expanded)
         info = {
