@@ -14,10 +14,10 @@ class InstanceRecommender:
         }
 
     def evaluate(self, metrics):
-        if metrics['CPUUtilization'] > self.thresholds['cpu_upper'] and metrics['NetworkIn'] + metrics['NetworkOut'] > self.thresholds['net_upper']:
-            return "Consider switching to a smaller instance type"
-        if metrics['CPUUtilization'] < self.thresholds['cpu_lower'] and metrics['NetworkIn'] + metrics['NetworkOut'] < self.thresholds['net_lower']:
+        if metrics['CPUUtilization'] > self.thresholds['cpu_upper'] or metrics['NetworkIn'] + metrics['NetworkOut'] > self.thresholds['net_upper']:
             return "Consider switching to a larger instance type"
+        if metrics['CPUUtilization'] < self.thresholds['cpu_lower'] and metrics['NetworkIn'] + metrics['NetworkOut'] < self.thresholds['net_lower']:
+            return "Consider switching to a smaller instance type"
         else:
             return "Instance type is acceptable"
 
