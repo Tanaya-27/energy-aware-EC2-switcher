@@ -32,6 +32,9 @@ def main(region_name='us-east-1'):
     # load the trained model
     agent.load()
 
+    # track recommendation history
+    recommendation_counters = {}
+
     # start monitoring and managing EC2 instances
     print("Starting instance management loop...")
     while True:
@@ -64,9 +67,40 @@ def main(region_name='us-east-1'):
             recommended_type = instance_list[action]
             print(f"RL model recommendation for {instance_id}: {recommended_type}")
 
-            # switch instance type if the recommendation differs
-            if recommended_type != current_type:
+            # add prediciton to recommendation counter as a voting system
+            if instance_id not in recommendation_counters:
+                recommendation_counters[instance_id] = {
+                    "last": recommended_type,
+                    "count": 1
+                }
+            else:
+                last_rec = recommendation_counters[instance_id]["last"]
+                if recommended_type == last_rec:
+                    recommendation_counters[instance_id]["count"] += 1
+                else:
+                    recommendation_counters[instance_id] = {
+                        "last": recommended_type,
+                        "count": 1
+                    }
+            # switch only if recommendation is same 3 times and not already of that type
+            if (
+                recommended_type != current_type and
+                recommendation_counters[instance_id]["count"] >= 3
+            ):
+                print(f"Switching {instance_id} from {current_type} to {recommended_type}")
                 Switcher.switch_instance_type(ec2, instance_id, recommended_type)
+
+                # reset counter after switching
+                recommendation_counters[instance_id] = {
+                    "last": recommended_type,
+                    "count": 0
+                }
+            else:
+                print(f"{recommendation_counters[instance_id]["count"]} votes to switch for {instance_id} (current: {current_type}, recommended: {recommended_type})")
+
+            # # switch instance type if the recommendation differs
+            # if recommended_type != current_type:
+            #     Switcher.switch_instance_type(ec2, instance_id, recommended_type)
 
         time.sleep(60)  # TODO wait 5 minutes between checks
     
