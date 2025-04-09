@@ -7,7 +7,6 @@ import time
 
 def main(region_name='us-east-1'):
     ec2 = boto3.client('ec2', region_name=region_name)
-    switcher = Switcher()
 
     # define instance types, power data, and price data for the RL environment
     instance_list = ["t2.micro", "t2.small", "t2.medium", "t2.large"]
@@ -37,7 +36,7 @@ def main(region_name='us-east-1'):
     print("Starting instance management loop...")
     while True:
         # get all running instances
-        instances = switcher.get_all_instances()
+        instances = Switcher.get_all_instances(region_name)
         for instance in instances:
             instance_id = instance['InstanceId']
             current_type = instance['InstanceType']
@@ -67,7 +66,7 @@ def main(region_name='us-east-1'):
 
             # switch instance type if the recommendation differs
             if recommended_type != current_type:
-                switcher.switch_instance_type(ec2, instance_id, recommended_type)
+                Switcher.switch_instance_type(ec2, instance_id, recommended_type)
 
         time.sleep(60)  # TODO wait 5 minutes between checks
     

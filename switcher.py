@@ -28,6 +28,7 @@ def get_master_instance():
             return None
 
 class Switcher:
+    @staticmethod
     def get_all_instances(region_name='us-east-1'):
         ec2 = boto3.client('ec2', region_name=region_name)
         response = ec2.describe_instances()
@@ -43,6 +44,7 @@ class Switcher:
                     })
         return instances
 
+    @staticmethod
     def get_adjacent_instance_type(current_type, direction='up'):
         try:
             index = INSTANCE_ORDER.index(current_type)
@@ -56,6 +58,7 @@ class Switcher:
             print(f"Unknown instance type: {current_type}")
             return current_type
 
+    @staticmethod
     def switch_instance_type(ec2, instance_id, new_type):
         try:
             print(f"Switching {instance_id} to {new_type}")
