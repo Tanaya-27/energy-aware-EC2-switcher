@@ -22,15 +22,23 @@ class EC2Environment(gym.Env):
             dtype=np.float32
         )
 
-    def reset(self):
+    def reset(self, seed=None, return_info=False, options=None):
+        # Seed the environment for reproducibility
+        if seed is not None:
+            np.random.seed(seed)
+            random.seed(seed)
+
         self.current_step = 0
         self.current_instance = random.choice(self.instance_list)
         state = self._get_state()
+
+        if return_info:
+            return state, {}
         return state
 
     def step(self, action):
         """
-        Action is the index of the target instance in instance_list
+        Action is the index of the target instance in instance_list.
         """
         prev_instance = self.current_instance
         self.current_instance = self.instance_list[action]
@@ -40,7 +48,14 @@ class EC2Environment(gym.Env):
         reward = self._calculate_reward(prev_instance, self.current_instance)
         done = self.current_step >= len(self.workload_profile)
 
-        return next_state, reward, done, {}
+        #optional info dictionary (can be expanded)
+        info = {
+            "previous_instance": prev_instance,
+            "current_instance": self.current_instance,
+            "step": self.current_step
+        }
+
+        return next_state, reward, done, info
 
     def _get_state(self):
         workload = self.workload_profile[self.current_step]
