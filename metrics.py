@@ -12,7 +12,7 @@ class MetricCollector:
         self.cloudwatch = boto3.client('cloudwatch', region_name=region_name)
 
     def get_cloudwatch_metric(self, metric_name, namespace='AWS/EC2'):
-        end_time = datetime.datetime.utcnow()
+        end_time = datetime.datetime.now(datetime.timezone.utc)
         start_time = end_time - datetime.timedelta(minutes=5)
 
         response = self.cloudwatch.get_metric_statistics(
