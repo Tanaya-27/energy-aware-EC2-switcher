@@ -27,7 +27,7 @@ class MetricCollector:
 
         datapoints = response.get('Datapoints', [])
         if datapoints:
-            return datapoints[-1]['Average'], datapoints[-1]['Unit']
+            return datapoints[-1]['Average']#, datapoints[-1]['Unit']
         return 0.0
 
     def get_all_metrics(self):
