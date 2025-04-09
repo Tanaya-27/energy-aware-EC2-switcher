@@ -10,7 +10,7 @@ class InstanceRecommender:
             'cpu_upper': 70,     # percent
             'cpu_lower': 20,     # percent
             'net_upper': 5000000, # bytes (5MB)
-            'net_lower': 50000,  # bytes (50KB)
+            'net_lower': 100000,  # bytes (50KB)
         }
 
     def evaluate(self, metrics):
