@@ -37,7 +37,7 @@ def main(region_name='us-east-1'):
     print("Starting instance management loop...")
     while True:
         # get all running instances
-        instances = switcher.get_all_instances(region_name)
+        instances = switcher.get_all_instances()
         for instance in instances:
             instance_id = instance['InstanceId']
             current_type = instance['InstanceType']
