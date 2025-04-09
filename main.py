@@ -2,21 +2,47 @@ from metrics import MetricCollector
 from decision_heuristic import InstanceRecommender
 import boto3
 import time
+import requests
 
 # Ordered list of instance sizes (can expand this as needed)
 INSTANCE_ORDER = ['t2.micro', 't2.small', 't2.medium', 't2.large']
 
+def get_master_instance():
+    try:
+        # request a token for IMDSv2
+        token_response = requests.put(
+            "http://169.254.169.254/latest/api/token",
+            headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"},
+            timeout=2
+        )
+        token_response.raise_for_status()
+        token = token_response.text
+
+        # use the token to fetch the instance ID
+        metadata_response = requests.get(
+            "http://169.254.169.254/latest/meta-data/instance-id",
+            headers={"X-aws-ec2-metadata-token": token},
+            timeout=2
+        )
+        metadata_response.raise_for_status()
+        return metadata_response.text
+    except requests.RequestException as e:
+        print(f"Error fetching instance metadata: {e}")
+        return None
+    
 def get_all_instances(region_name='us-east-1'):
     ec2 = boto3.client('ec2', region_name=region_name)
     response = ec2.describe_instances()
     instances = []
     for reservation in response['Reservations']:
         for instance in reservation['Instances']:
-            instances.append({
-                'InstanceId': instance['InstanceId'],
-                'InstanceType': instance['InstanceType'],
-                'State': instance['State']['Name']
-            })
+            # exclude master instance
+            if instance['InstanceId'] != get_master_instance():
+                instances.append({
+                    'InstanceId': instance['InstanceId'],
+                    'InstanceType': instance['InstanceType'],
+                    'State': instance['State']['Name']
+                })
     return instances
 
 def get_adjacent_instance_type(current_type, direction='up'):
@@ -64,7 +90,7 @@ def main(region_name='us-east-1'):
             metrics = collector.get_all_metrics()
 
             print("Collected metrics:", metrics)
-            
+
             recommendation = recommender.evaluate(metrics)
             print(f"{instance_id} ({current_type}): {recommendation}")
 
