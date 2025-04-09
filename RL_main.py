@@ -19,7 +19,7 @@ def main(region_name='us-east-1'):
         instance_list=instance_list,
         power_data=power_data,
         price_data=price_data,
-        max_steps=20000  #training episode length
+        # max_steps=20000  #training episode length
     )
 
     # initialize the RL agent
