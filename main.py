@@ -63,6 +63,8 @@ def main(region_name='us-east-1'):
             collector = MetricCollector(instance_id, region_name)
             metrics = collector.get_all_metrics()
 
+            print("Collected metrics:", metrics)
+            
             recommendation = recommender.evaluate(metrics)
             print(f"{instance_id} ({current_type}): {recommendation}")
 
