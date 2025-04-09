@@ -12,7 +12,7 @@ env = EC2Environment(
     instance_list=instance_list,
     power_data=power_data,
     price_data=price_data,
-    max_steps=5  # short test episode
+    # max_steps=5  # short test episode
 )
 
 class RLAgent:
