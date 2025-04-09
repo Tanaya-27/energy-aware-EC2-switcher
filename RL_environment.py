@@ -1,7 +1,7 @@
 import random
 import numpy as np
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 
 class EC2Environment(gym.Env):
     def __init__(self, instance_list, power_data, price_data, workload_profile=None):
