@@ -77,3 +77,6 @@ def main(region_name='us-east-1'):
                     switch_instance_type(ec2, instance_id, new_type)
 
         time.sleep(60)  # TODO wait 5 minutes between checks
+    
+if __name__ == "__main__":
+    main()
