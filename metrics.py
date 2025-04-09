@@ -21,7 +21,7 @@ class MetricCollector:
             Dimensions=[{'Name': 'InstanceId', 'Value': self.instance_id}],
             StartTime=start_time,
             EndTime=end_time,
-            Period=300,
+            Period=20,
             Statistics=['Average']
         )
 
@@ -36,53 +36,5 @@ class MetricCollector:
             'NetworkIn': self.get_cloudwatch_metric('NetworkIn'),
             'NetworkOut': self.get_cloudwatch_metric('NetworkOut')
         }
-
         return metrics
-    
-    # TODO use PowerAPI — replace with real API
-    # def estimate_power_consumption(self):
-    #     
-    #     try:
-    #         response = requests.get("http://localhost:8000/power")
-    #         return response.json().get('power', 0.0)
-    #     except:
-    #         return None
 
-# testing metrics by printing them out
-def get_instance_metadata():
-    try:
-        # Step 1: Request a token for IMDSv2
-        token_response = requests.put(
-            "http://169.254.169.254/latest/api/token",
-            headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"},
-            timeout=2
-        )
-        token_response.raise_for_status()
-        token = token_response.text
-
-        # Step 2: Use the token to fetch the instance ID
-        metadata_response = requests.get(
-            "http://169.254.169.254/latest/meta-data/instance-id",
-            headers={"X-aws-ec2-metadata-token": token},
-            timeout=2
-        )
-        metadata_response.raise_for_status()
-        return metadata_response.text
-    except requests.RequestException as e:
-        print(f"Error fetching instance metadata: {e}")
-        return None
-
-
-if __name__ == "__main__":
-    instance_id = get_instance_metadata()
-    if not instance_id:
-        print("Failed to retrieve instance ID. Exiting.")
-    else:
-        collector = MetricCollector(instance_id)
-
-    collector = MetricCollector(instance_id)
-
-    metrics = collector.get_all_metrics()
-    # metrics['power'] = collector.estimate_power_consumption()
-
-    print("Collected metrics:", metrics)
