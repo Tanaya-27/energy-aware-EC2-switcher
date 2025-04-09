@@ -32,9 +32,9 @@ class EC2Environment(gym.Env):
         self.current_instance = random.choice(self.instance_list)
         state = self._get_state()
 
-        if return_info:
-            return state, {}
-        return state
+        # Always return a tuple (state, info)
+        info = {}  # Empty info dictionary
+        return state, info
 
     def step(self, action):
         """
