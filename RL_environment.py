@@ -3,7 +3,7 @@ import numpy as np
 import gym
 from gym import spaces
 
-class EC2Environment:
+class EC2Environment(gym.Env):
     def __init__(self, instance_list, power_data, price_data, workload_profile=None):
         self.instance_list = instance_list
         self.power_data = power_data  # dict: instance_type -> power(W) at full usage
