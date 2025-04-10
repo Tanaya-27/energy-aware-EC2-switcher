@@ -87,7 +87,7 @@ def main(region_name='us-east-1'):
                 recommended_type != current_type and
                 recommendation_counters[instance_id]["count"] >= 3
             ):
-                print(f"Switching {instance_id} from {current_type} to {recommended_type}")
+                print(f"Switching {instance_id} from {current_type} to {recommended_type}\n")
                 Switcher.switch_instance_type(ec2, instance_id, recommended_type)
 
                 # reset counter after switching
@@ -95,8 +95,10 @@ def main(region_name='us-east-1'):
                     "last": recommended_type,
                     "count": 0
                 }
+            elif(recommended_type != current_type):
+                print(f"{recommendation_counters[instance_id]["count"]} votes to switch for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
             else:
-                print(f"{recommendation_counters[instance_id]["count"]} votes to switch for {instance_id} (current: {current_type}, recommended: {recommended_type})")
+                print(f"No switch needed for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
 
             # # switch instance type if the recommendation differs
             # if recommended_type != current_type:

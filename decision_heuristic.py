@@ -1,5 +1,3 @@
-# decision_heuristic.py
-
 class InstanceRecommender:
     def __init__(self, cpu_weight=0.7, net_weight=0.3):
         self.cpu_weight = cpu_weight
