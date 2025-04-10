@@ -94,7 +94,7 @@ def main(region_name='us-east-1'):
                         "last_direction": direction,
                         "count": 1
                     }
-                print(f"{recommendation_counters[instance_id]["count"]} votes to switch {direction} for {instance_id}\n(current: {current_type}, recommended: {recommended_type})")
+                print(f"{recommendation_counters[instance_id]["count"]} votes to switch {direction} for {instance_id}\n(current: {current_type}, recommended: {recommended_type})\n")
 
                 # switch only if recommendation is same 3 times and not already of that type
                 if (recommendation_counters[instance_id]["count"] >= 3):
@@ -107,6 +107,11 @@ def main(region_name='us-east-1'):
                         "count": 0
                     }
             else:
+                # reset counter as no switch needed
+                recommendation_counters[instance_id] = {
+                    "last_direction": None,
+                    "count": 0
+                }
                 print(f"No switch needed for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
 
         time.sleep(60)  # TODO wait 5 minutes between checks
