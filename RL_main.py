@@ -74,30 +74,35 @@ def main(region_name='us-east-1'):
             # add prediciton to recommendation counter as a voting system
             if instance_id not in recommendation_counters:
                 recommendation_counters[instance_id] = {
-                    "last": recommended_type,
+                    "last_direction": None,
+                    "count": 0
+                }
+            
+            # Determine the direction of the current recommendation
+            current_index = instance_list.index(current_type)
+            recommended_index = instance_list.index(recommended_type)
+            direction = "up" if recommended_index > current_index else "down"
+
+            # Check if the direction matches the last direction
+            if recommendation_counters[instance_id]["last_direction"] == direction:
+                recommendation_counters[instance_id]["count"] += 1
+            else:
+                # Reset the counter if the direction changes
+                recommendation_counters[instance_id] = {
+                    "last_direction": direction,
                     "count": 1
                 }
-            else:
-                last_rec = recommendation_counters[instance_id]["last"]
-                if recommended_type == last_rec:
-                    recommendation_counters[instance_id]["count"] += 1
-                else:
-                    recommendation_counters[instance_id] = {
-                        "last": recommended_type,
-                        "count": 1
-                    }
-            print(f"{recommendation_counters[instance_id]["count"]} votes to switch for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
+            print(f"{recommendation_counters[instance_id]["count"]} votes to switch {direction} for {instance_id}\n(current: {current_type}, recommended: {recommended_type})\n")
+
             # switch only if recommendation is same 3 times and not already of that type
-            if (
-                recommended_type != current_type and
-                recommendation_counters[instance_id]["count"] >= 3
-            ):
+            if (recommended_type != current_type and
+                recommendation_counters[instance_id]["count"] >= 3):
                 print(f"Switching {instance_id} from {current_type} to {recommended_type}\n")
                 Switcher.switch_instance_type(ec2, instance_id, recommended_type)
 
                 # reset counter after switching
                 recommendation_counters[instance_id] = {
-                    "last": recommended_type,
+                    "last_direction": None,
                     "count": 0
                 }
             elif(recommended_type == current_type):
