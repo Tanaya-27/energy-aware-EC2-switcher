@@ -76,8 +76,13 @@ class EC2Environment(gym.Env):
 
     def _calculate_reward(self, old_instance, new_instance):
         print("Calculating reward...")
-        old_power = self.power_data[old_instance]
-        new_power = self.power_data[new_instance]
+
+        # Get the current workload values
+        workload = self.workload_profile[self.current_step]
+        cpu = workload['cpu']
+
+        old_power = self.power_data[old_instance] * (cpu/100)
+        new_power = self.power_data[new_instance] * (cpu/100)
         print(f"Old Power: {old_power}, New Power: {new_power}")
 
         old_cost = self.price_data[old_instance]
@@ -95,7 +100,7 @@ class EC2Environment(gym.Env):
     def _generate_synthetic_workload(self):
         profile = []
         for _ in range(100):
-            cpu = random.uniform(10, 90)  # percent
+            cpu = random.uniform(0, 100)  # percent
             network = random.uniform(1e5, 1e7)  # bytes
             profile.append({'cpu': cpu, 'network': network})
         return profile
