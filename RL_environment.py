@@ -77,10 +77,12 @@ class EC2Environment(gym.Env):
 
     def _calculate_reward(self, old_instance, new_instance):
         print("Calculating reward...")
+        print(f"Old Instance: {old_instance}, New Instance: {new_instance}")
 
         # Get the current workload values
         workload = self.workload_profile[self.current_step]
         cpu = workload['cpu']
+        print(f"CPU Utilization: {cpu}")
 
         old_power = self.power_data[old_instance] * (cpu/100)
         new_power = self.power_data[new_instance] * (cpu/100)
