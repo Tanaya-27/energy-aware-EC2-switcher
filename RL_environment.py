@@ -75,17 +75,21 @@ class EC2Environment(gym.Env):
         return np.array([cpu, net, power, price])
 
     def _calculate_reward(self, old_instance, new_instance):
+        print("Calculating reward...")
         old_power = self.power_data[old_instance]
         new_power = self.power_data[new_instance]
+        print(f"Old Power: {old_power}, New Power: {new_power}")
 
         old_cost = self.price_data[old_instance]
         new_cost = self.price_data[new_instance]
+        print(f"Old Cost: {old_cost}, New Cost: {new_cost}")
 
         # reward is energy saved minus extra cost
         power_saved = old_power - new_power
         cost_diff = new_cost - old_cost
 
         reward = (power_saved * 10) - (cost_diff * 1)  # weight power more
+        print(f"Reward: {reward}")
         return reward
 
     def _generate_synthetic_workload(self):
