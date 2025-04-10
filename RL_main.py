@@ -55,10 +55,14 @@ def main(region_name='us-east-1'):
             print(f"Collected metrics for {instance_id}: {metrics}")
 
             # prepare state for the RL model
-            cpu = metrics.get('CPUUtilization', 50.0)
+            cpu = metrics.get('CPUUtilization', 0.0)
             net = metrics.get('NetworkIn', 0.0) + metrics.get('NetworkOut', 0.0)
             power = power_data[current_type] * (cpu / 100)
             price = price_data[current_type]
+
+            if(cpu == 0.0):
+                print(f"Skipping {instance_id}; CPU utilization not collected.\n")
+                continue
 
             state = [cpu, net, power, price]
 
@@ -82,6 +86,7 @@ def main(region_name='us-east-1'):
                         "last": recommended_type,
                         "count": 1
                     }
+            print(f"{recommendation_counters[instance_id]["count"]} votes to switch for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
             # switch only if recommendation is same 3 times and not already of that type
             if (
                 recommended_type != current_type and
@@ -95,14 +100,8 @@ def main(region_name='us-east-1'):
                     "last": recommended_type,
                     "count": 0
                 }
-            elif(recommended_type != current_type):
-                print(f"{recommendation_counters[instance_id]["count"]} votes to switch for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
-            else:
+            elif(recommended_type == current_type):
                 print(f"No switch needed for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
-
-            # # switch instance type if the recommendation differs
-            # if recommended_type != current_type:
-            #     Switcher.switch_instance_type(ec2, instance_id, recommended_type)
 
         time.sleep(60)  # TODO wait 5 minutes between checks
     
