@@ -66,8 +66,9 @@ class EC2Environment(gym.Env):
 
     def _get_state(self):
         workload = self.workload_profile[self.current_step]
-        cpu = workload['cpu']
-        net = workload['network']
+        # normalise cpu and network usage
+        cpu = workload['cpu'] /100 # normalise to 0-1
+        net = workload['network'] /(2*1e7) # normalise to 0-0.5
 
         power = self.power_data[self.current_instance] * (cpu / 100)
         price = self.price_data[self.current_instance]

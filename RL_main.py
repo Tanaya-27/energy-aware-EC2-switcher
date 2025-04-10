@@ -55,7 +55,7 @@ def main(region_name='us-east-1'):
             print(f"Collected metrics for {instance_id}: {metrics}")
 
             # prepare state for the RL model
-            cpu = metrics.get('CPUUtilization', 0.0)
+            cpu = metrics.get('CPUUtilization', 50.0)
             net = metrics.get('NetworkIn', 0.0) + metrics.get('NetworkOut', 0.0)
             power = power_data[current_type] * (cpu / 100)
             price = price_data[current_type]
