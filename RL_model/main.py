@@ -118,7 +118,7 @@ def main(region_name='us-east-1'):
                 }
                 print(f"No switch needed for {instance_id} (current: {current_type}, recommended: {recommended_type})\n")
 
-        time.sleep(60)  # TODO wait 5 minutes between checks
+        time.sleep(10)  # TODO wait 5 minutes between checks
     
 if __name__ == "__main__":
     main()
